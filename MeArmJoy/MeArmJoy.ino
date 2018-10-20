@@ -117,7 +117,7 @@ void loop() {
   right.write(RIGHT.angle);
   middle.write(MIDDLE.angle);
 
-  if (CLAW.ouvert == true) {
+  if (CLAW.ouvert == true) {  //l'attribut booleen ouvert est public car necessaire directement dans la loop
     claw.write(0);
   }
   else {
