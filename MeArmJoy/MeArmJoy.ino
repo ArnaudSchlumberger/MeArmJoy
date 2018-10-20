@@ -3,18 +3,24 @@
 #define potenMid A0
 #define potenLeft A1
 #define potenRight A2
+#define boutonClaw A3
 
 //Variables pour servo MIDDLE
 int AngMid = 0;
 float dAngMid;
+
 //Variables pour servo LEFT
 int AngLeft = 0;
 float dAngLeft;
+
 //Variables pour servo RIGHT
 int AngRight = 0;
 float dAngRight;
 
-
+//Variables pour servo CLAW
+bool etat = false, dernierEtat = false;
+unsigned long temps, tempsRebond = 10;
+bool ouvert = false;
 
 float maxSpeed = 5.0; //Valeur d'incrémentation maximale des angles
 
@@ -56,14 +62,16 @@ void loop() {
   AngMid = AngMid + dAngMid; //Mise a jour de AngMid
   AngMid = constrain(AngMid, 0, 165);//AngMid limité aux valeurs comprises entre 0 et 165
   middle.write(AngMid);
-
+  //////FIN MIDDLE
+  
   //////LEFT
   dAngLeft = analogRead(potenLeft);  //Meme fonctionnement que ci-dessus
   dAngLeft = map(dAngLeft, 0, 1023, -maxSpeed, maxSpeed);
   AngLeft = AngLeft + dAngLeft;
   AngLeft = constrain(AngLeft, 90, 180); //Limitation: 90,180
   left.write(AngLeft);
-
+  //////FIN LEFT
+  
   //RIGHT
   dAngRight = analogRead(potenRight);
   dAngRight = map(dAngRight, 0, 1023, -maxSpeed, maxSpeed);
@@ -71,5 +79,21 @@ void loop() {
   AngRight = constrain(AngRight, 45, 130); //Limitation : 45, 130
   right.write(AngRight);
   delay(100); //Delai pour permettre aux servos de suivre la commande
+  //////FIN RIGHT
+  
+  ///CLAW
+  //Pilotage par bouton
+  dernierEtat = etat;
+  etat = digitalRead(boutonClaw);
+  if (!dernierEtat && etat && millis() - temps >= tempsRebond){
+    ouvert = !ouvert;
+  }
+  if(ouvert == true){
+    claw.write(0);
+  }
+  else{
+    claw.write(100);
+  }
+  //FIN CLAW
 }
 
